@@ -2,17 +2,24 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import styled from 'styled-components'
 
-const List = () => {
+const List = ({ update }) => {
     const API = 'http://localhost:8000/api/list'
     const [data, setData] = useState({ hits: [] });
-    useEffect(async () => {
+    useEffect(() => {
         const fetchData = async () => {
             const result = await axios(API);
 
             setData(result.data);
         };
         fetchData();
-    }, []);
+    }, [update]);
+    function formatDate(input) {
+        var datePart = input.match(/\d+/g),
+            year = datePart[0].substring(), // get only two digits
+            month = datePart[1], day = datePart[2];
+
+        return day + '/' + month + '/' + year;
+    }
     const dataIterable = Array.from(data);
     const renderTable = () => {
         return dataIterable.map(user => {
@@ -20,10 +27,8 @@ const List = () => {
                 <tr key={user.id}>
                     <td className="capitalize">{user.firstname}</td>
                     <td className="capitalize">{user.lastname}</td>
-
-                    <td>{user.birthdate}</td>
+                    <td>{formatDate(user.birthdate)}</td>
                     <td>{user.email}</td>
-
                 </tr>
             )
         })
